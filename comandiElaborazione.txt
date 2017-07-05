@@ -1,0 +1,35 @@
+#File scaricato (file .pbf, lo shapefile per l'Italia non è disponibile) da geofabrik. Si tratta di un file già ritagliato mediante
+# il file italy.poly
+
+Tutorial: https://oegeo.wordpress.com/category/tutorial/
+
+Il file pbf fa elaborato con osmfilter che è piùveloce di osmosis
+
+Prima di tutto convertiamo in o5m mediante osmconvert (osmfilter lavora solo con o5m e non con file pbf)
+
+osmconvert fileInput.pbf -o=fileOutput.o5m
+
+Per filtrare si è utilizzato:
+
+osmfilter italy_wgs-84_2017-05-02_pbf_full-detail.o5m --keep= --keep-ways="building=" --keep-ways="highway=" --drop-relations -o=prova.o5m
+
+Quindi il file va riconvertito in pbf: (specificare il bounding box serve per evitare un bug in --drop-broken-refs)
+
+osmconvert prova.o5m -o=italia_strade_edifici.pbf
+
+A questo punto possiamo traformare tutto in uno shapefile mediante ogr2ogr:
+
+ogr2ogr -f "ESRI shapefile" shape nomeFile.pbf -skipfailures -nlt GEOMETRY
+
+ATTENZIONE: shape è una directory, la directory dove andranno gli shapefile creati
+-nlt GEOMETRY fondamentale altrimenti abbiamo un errore per un tipo di geometria non supportato dagli shapefile
+-skipfailures: fondamentale perchè convertendo il programma incontra degli errori in alcuni caratteri 
+
+
+#Ritagliamo l'italia con italia.poly, italia.poly si scarica da Geofabrik
+#osmosis --read-pbf file=italia_strade_edifici.pbf --bounding-polygon file=italy.poly --write-pbf finale.pbf
+
+https://gis.stackexchange.com/questions/115911/converting-osm-file-to-shapefile-or-data-frame-in-r <--- Per elaborare file .osm
+
+
+#R ci mette troppo con il pacchetto osmar a leggere il file creato ".osm" (lo stesso QGIS)
