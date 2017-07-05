@@ -11,7 +11,18 @@ osmconvert fileInput.pbf -o=fileOutput.o5m
 
 Per filtrare si è utilizzato:
 
-osmfilter italy_wgs-84_2017-05-02_pbf_full-detail.o5m --keep= --keep-ways="building=" --keep-ways="highway=" --drop-relations -o=prova.o5m
+#Per evitare di avere uno shapefile troppo grande filtriamo highway tenendo (http://wiki.openstreetmap.org/wiki/Key:highway):
+# -motorway
+# -trunk
+# -primary
+# -secondary
+# -tertiary
+
+#Per le costruzione: (http://wiki.openstreetmap.org/wiki/Key:building)
+# - industrial
+# - transportation
+
+osmfilter italy_wgs-84_2017-05-02_pbf_full-detail.o5m --keep= --keep-ways="building=industrial =transportation" --keep-ways="highway=motorway =trunk =primary  =secondary =tertiary" --drop-relations -o=prova.o5m
 
 Quindi il file va riconvertito in pbf: (specificare il bounding box serve per evitare un bug in --drop-broken-refs)
 
